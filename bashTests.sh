@@ -14,7 +14,7 @@ function GET {
     echo -n "GET $1 :"
     $_myCurl "$*" &> "$OUT" &&
     { echo -e "\e[0;49;92m OK \e[0m"; true; } ||
-    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; false; }
+    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; cp -v "$OUT" "$OUT.$(date +%Y-%m-%d_%H-%M-%S)"; false; }
 }
 
 function POST {
@@ -33,14 +33,14 @@ function POST {
     test "$DEBUG" -eq 0 || set +x;
     test "$r" -eq 0 &&
     { echo -e "\e[0;49;92m OK \e[0m"; true; } ||
-    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; false; }
+    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; cp -v "$OUT" "$OUT.$(date +%Y-%m-%d_%H-%M-%S)"; false; }
 }
 
 function GREP {
     echo -n "GREP $* :"
     egrep "$*" "$OUT" &> /dev/null &&
     { echo -e "\e[0;49;92m OK \e[0m"; true; } ||
-    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; false; }
+    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; cp -v "$OUT" "$OUT.$(date +%Y-%m-%d_%H-%M-%S)"; false; }
 }
 
 function NOGREP {
@@ -48,11 +48,13 @@ function NOGREP {
     egrep "$*" "$OUT" &> /dev/null
     test "$?" -ne 0 &&
     { echo -e "\e[0;49;92m OK \e[0m"; true; } ||
-    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; false; }
+    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; cp -v "$OUT" "$OUT.$(date +%Y-%m-%d_%H-%M-%S)"; false; }
 }
 
 function EXTRACT {
-    cat "$OUT" | perl -p0e "s|^.+?$1.+$|$2|s"
+    re="$1"
+    subs="$2"
+    cat "$OUT" | perl -n0e "\$i=\$_; s|^.*?$re.*$|$subs|s; print if \$i =~ m|$re|s"
 }
 
 function END {
