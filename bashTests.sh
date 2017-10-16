@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-cookiesFile=/tmp/curlTests.cookies
-OUT=/tmp/curlTests.out
+cookiesFile=/tmp/bashTests.cookies
+OUT=/tmp/bashTests.out
 R=0
 DEBUG=0
 
@@ -47,6 +47,13 @@ function NOGREP {
     echo -n "NOGREP $* :"
     egrep "$*" "$OUT" &> /dev/null
     test "$?" -ne 0 &&
+    { echo -e "\e[0;49;92m OK \e[0m"; true; } ||
+    { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; cp -v "$OUT" "$OUT.$(date +%Y-%m-%d_%H-%M-%S)"; false; }
+}
+
+function SHELL {
+    echo -n "SHELL $* :"
+    "$@" > "$OUT" &&
     { echo -e "\e[0;49;92m OK \e[0m"; true; } ||
     { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; cp -v "$OUT" "$OUT.$(date +%Y-%m-%d_%H-%M-%S)"; false; }
 }
