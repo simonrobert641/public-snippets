@@ -12,7 +12,7 @@ rm -f "$cookiesFile"
 
 function GET {
     echo -n "GET $1 :"
-    $_myCurl "$*" &> "$OUT" &&
+    $_myCurl "$*" &> "$OUT" && grep -q "< HTTP/1.[01] 200 OK" "$OUT" &&
     { echo -e "\e[0;49;92m OK \e[0m"; true; } ||
     { echo -e " \e[7;49;91m FAIL \e[0m"; R=1; cp -v "$OUT" "$OUT.$(date +%Y-%m-%d_%H-%M-%S)"; false; }
 }
@@ -28,7 +28,7 @@ function POST {
     done < <(cat)
 
     test "$DEBUG" -eq 0 || set -x
-    $_myCurl "$1" -X POST "${args[@]}" &> "$OUT"
+    $_myCurl "$1" -X POST "${args[@]}" &> "$OUT" && grep -q "< HTTP/1.[01] 200 OK" "$OUT"
     local r=$?
     test "$DEBUG" -eq 0 || set +x;
     test "$r" -eq 0 &&
