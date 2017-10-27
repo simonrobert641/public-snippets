@@ -6,7 +6,7 @@ R=0
 DEBUG=0
 
 # Commande curl
-_myCurl="curl -v -L -c $cookiesFile -b $cookiesFile"
+_myCurl="curl -v -k -L -c $cookiesFile -b $cookiesFile"
 
 rm -f "$cookiesFile"
 
